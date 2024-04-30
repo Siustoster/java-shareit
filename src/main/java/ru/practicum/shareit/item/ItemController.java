@@ -17,31 +17,31 @@ import java.util.Collection;
 public class ItemController {
     @Autowired
     private ItemService itemService;
-    private static final String HEADER = "X-Sharer-User-Id";
+    private static final String header = "X-Sharer-User-Id";
 
     @PostMapping
-    public ItemDto createItem(@RequestHeader(HEADER) int userId, @RequestBody @Valid ItemDto item) {
+    public ItemDto createItem(@RequestHeader(header) int userId, @RequestBody @Valid ItemDto item) {
         return itemService.createItem(item, userId);
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto updateItem(@RequestHeader(HEADER) int userId, @PathVariable int itemId,
+    public ItemDto updateItem(@RequestHeader(header) int userId, @PathVariable int itemId,
                               @RequestBody ItemDto item) {
         return itemService.updateItem(item, itemId, userId);
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto getItemById(@RequestHeader(HEADER) int userId, @PathVariable int itemId) {
+    public ItemDto getItemById(@RequestHeader(header) int userId, @PathVariable int itemId) {
         return itemService.getItemByIdAndUserId(userId, itemId);
     }
 
     @GetMapping
-    public Collection<ItemDto> getAllUserItems(@RequestHeader(HEADER) int userId) {
+    public Collection<ItemDto> getAllUserItems(@RequestHeader(header) int userId) {
         return itemService.getAllUserItems(userId);
     }
 
     @GetMapping("/search")
-    public Collection<ItemDto> searchItem(@RequestHeader(HEADER) int userId, @RequestParam String text) {
+    public Collection<ItemDto> searchItem(@RequestHeader(header) int userId, @RequestParam String text) {
         return itemService.searchItem(text, userId);
     }
 }
