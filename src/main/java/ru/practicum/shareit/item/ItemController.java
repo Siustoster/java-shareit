@@ -17,7 +17,7 @@ import java.util.Collection;
 public class ItemController {
     @Autowired
     private ItemService itemService;
-    private final String HEADER = "X-Sharer-User-Id";
+    private static final String HEADER = "X-Sharer-User-Id";
 
     @PostMapping
     public ItemDto createItem(@RequestHeader(HEADER) int userId, @RequestBody @Valid ItemDto item) {
