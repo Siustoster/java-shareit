@@ -7,6 +7,7 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,6 +48,8 @@ public class ItemService {
 
     public List<ItemDto> searchItem(String text, int userId) {
         userService.getUser(userId);
+        if (text.isBlank())
+            return new ArrayList<>();
         return itemStorage.searchItem(text).stream()
                 .map(itemMapper::mapItemToDto)
                 .collect(Collectors.toList());
