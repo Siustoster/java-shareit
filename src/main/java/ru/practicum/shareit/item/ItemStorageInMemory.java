@@ -4,9 +4,9 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ItemStorageInMemory implements ItemStorage {
@@ -41,22 +41,16 @@ public class ItemStorageInMemory implements ItemStorage {
 
     @Override
     public List<Item> getAllUserItems(int userId) {
-        List<Item> itemsFounded = new ArrayList<>();
-        for (Item item : itemList.values()) {
-            if (item.getOwnerId() == userId)
-                itemsFounded.add(item);
-        }
-        return itemsFounded;
+        return itemList.values().stream().filter(item ->
+                item.getOwnerId() == userId).collect(Collectors.toList());
     }
 
     @Override
     public List<Item> searchItem(String text) {
-        List<Item> itemsFounded = new ArrayList<>();
-        for (Item item : itemList.values()) {
-            if ((item.getItemName().toLowerCase().contains(text.toLowerCase()) ||
-                    item.getDescription().toLowerCase().contains(text.toLowerCase())) && item.getAvailable())
-                itemsFounded.add(item);
-        }
-        return itemsFounded;
+        return itemList.values().stream()
+                .filter(item -> item.getItemName().toLowerCase().contains(text.toLowerCase())
+                        || item.getDescription().toLowerCase().contains(text.toLowerCase()))
+                .filter(Item::getAvailable)
+                .collect(Collectors.toList());
     }
 }

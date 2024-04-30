@@ -6,7 +6,6 @@ import ru.practicum.shareit.exception.EmailAlreadyExistsException;
 import java.util.*;
 
 @Service
-
 public class UserStorageInMemory implements UserStorage {
     private int idCount = 0;
     private List<String> emails = new ArrayList<>();
