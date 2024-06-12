@@ -45,10 +45,12 @@ public class ItemMapper {
         resultItem.setAvailable(item.getAvailable());
 
         if (getBookings) {
-            List<BookingDto> lastBookingDto = bookingRepository.findFirst1ByItemIdAndStartIsBeforeAndStatusOrderByStartDesc
-                    (item.getId(), now, BookingStatus.APPROVED);
-            List<BookingDto> nextBookingDto = bookingRepository.findFirst1ByItemIdAndStartIsAfterAndStatusOrderByStartAsc
-                    (item.getId(), now, BookingStatus.APPROVED);
+            List<BookingDto> lastBookingDto = bookingRepository
+                    .findFirst1ByItemIdAndStartIsBeforeAndStatusOrderByStartDesc(item.getId(),
+                            now, BookingStatus.APPROVED);
+            List<BookingDto> nextBookingDto = bookingRepository
+                    .findFirst1ByItemIdAndStartIsAfterAndStatusOrderByStartAsc(item.getId(),
+                            now, BookingStatus.APPROVED);
 
             if (!lastBookingDto.isEmpty()) {
                 resultItem.setLastBooking(bookingMapper.mapBookingDtoToOutInformation(lastBookingDto.get(0)));
@@ -63,10 +65,9 @@ public class ItemMapper {
                                                                           List<CommentDto> comments) {
         ItemDtoWithBooking proxyItem = mapItemToDtoWithBooking(item, getBookings);
 
-        return new ItemDtoWithBookingAndComment
-                (proxyItem.getId(), proxyItem.getName(), proxyItem.getDescription(),
-                        proxyItem.getAvailable(), proxyItem.getLastBooking(),
-                        proxyItem.getNextBooking(), comments);
+        return new ItemDtoWithBookingAndComment(proxyItem.getId(), proxyItem.getName(), proxyItem.getDescription(),
+                proxyItem.getAvailable(), proxyItem.getLastBooking(),
+                proxyItem.getNextBooking(), comments);
     }
 
     public Comment mapDtoToComment(CommentDto commentDto, User user, Item item) {

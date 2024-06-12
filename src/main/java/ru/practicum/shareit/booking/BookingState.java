@@ -10,9 +10,9 @@ public enum BookingState {
     FUTURE;
 
     public static BookingState findByName(String name) {
-        for (BookingState state:values())
-            if(state.name().equalsIgnoreCase(name))
+        for (BookingState state : values())
+            if (state.name().equalsIgnoreCase(name))
                 return state;
-         return null;
+        return null;
     }
 }

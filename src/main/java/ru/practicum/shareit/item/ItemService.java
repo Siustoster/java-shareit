@@ -78,8 +78,8 @@ public class ItemService {
     public List<ItemDto> searchItem(String text, int userId) {
         if (text.isBlank())
             return new ArrayList<>();
-        return itemRepository.findAllByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndAvailableIsTrue
-                (text, text).stream().map(itemMapper::mapItemToDto).collect(Collectors.toList());
+        return itemRepository.findAllByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndAvailableIsTrue(text,
+                text).stream().map(itemMapper::mapItemToDto).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -94,8 +94,8 @@ public class ItemService {
         Item item = getFullItemById(itemId);
         if (comment.getText().isBlank())
             throw new BadParameterException("Текст отзыва не может быть пустым");
-        List<Booking> bookings = bookingService.findFirst1ByItemIdAndBookerIdAndEndIsBefore
-                (itemId, userId, LocalDateTime.now());
+        List<Booking> bookings = bookingService.findFirst1ByItemIdAndBookerIdAndEndIsBefore(itemId,
+                userId, LocalDateTime.now());
         if (bookings.isEmpty())
             throw new UserHasNoAccess("Нельзя оставить отзыв без использования");
         return itemMapper.mapCommentToDto(commentRepository.save(itemMapper.mapDtoToComment(comment, user, item)));
