@@ -4,36 +4,46 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Collection;
 
 @RequiredArgsConstructor
 @Service
 public class UserService {
-    private final UserStorage userStorage;
+    private final UserRepository userRepository;
 
+    @Transactional(readOnly = true)
     public Collection<User> getAllUsers() {
-        return userStorage.getAllUsers();
+        return userRepository.findAll();
     }
 
+    @Transactional
     public User createUser(User user) {
-        return userStorage.createUser(user);
+        return userRepository.save(user);
     }
 
+    @Transactional(readOnly = true)
     public User getUser(int id) {
-        if (userStorage.getUser(id) == null) {
+        if (userRepository.findById(id).isEmpty()) {
             throw new NotFoundException("Пользователь с id = " + id + " не найден");
         }
-        return userStorage.getUser(id);
+        return userRepository.findById(id).get();
     }
 
+    @Transactional
     public User updateUser(int id, User user) {
-        getUser(id);
-        user.setId(id);
-        return userStorage.updateUser(user);
+        User oldUser = getUser(id);
+        if (user.getName() != null && !user.getName().isBlank())
+            oldUser.setName(user.getName());
+        if (user.getEmail() != null && !user.getEmail().isBlank())
+            oldUser.setEmail(user.getEmail());
+
+        return userRepository.save(oldUser);
     }
 
+    @Transactional
     public void deleteUser(int id) {
-        getUser(id);
-        userStorage.deleteUser(id);
+        userRepository.delete(getUser(id));
     }
 }

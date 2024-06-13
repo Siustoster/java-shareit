@@ -2,14 +2,14 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoWithBooking;
+import ru.practicum.shareit.item.dto.ItemDtoWithBookingAndComment;
 
 import javax.validation.Valid;
 import java.util.Collection;
 
-/**
- * TODO Sprint add-controllers.
- */
 @RestController
 @RequestMapping("/items")
 @RequiredArgsConstructor
@@ -29,17 +29,23 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto getItemById(@RequestHeader(header) int userId, @PathVariable int itemId) {
+    public ItemDtoWithBookingAndComment getItemById(@RequestHeader(header) int userId, @PathVariable int itemId) {
         return itemService.getItemByIdAndUserId(userId, itemId);
     }
 
     @GetMapping
-    public Collection<ItemDto> getAllUserItems(@RequestHeader(header) int userId) {
+    public Collection<ItemDtoWithBooking> getAllUserItems(@RequestHeader(header) int userId) {
         return itemService.getAllUserItems(userId);
     }
 
     @GetMapping("/search")
     public Collection<ItemDto> searchItem(@RequestHeader(header) int userId, @RequestParam String text) {
         return itemService.searchItem(text, userId);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto postComment(@RequestHeader(header) int userId, @PathVariable int itemId,
+                                  @RequestBody CommentDto comment) {
+        return itemService.postComment(comment, userId, itemId);
     }
 }
