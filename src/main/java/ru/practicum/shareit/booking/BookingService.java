@@ -112,8 +112,8 @@ public class BookingService {
         if (state.name().equalsIgnoreCase("FUTURE"))
             bookingLinkedList = bookingRepository.getFutureUserItemBookings(userId, LocalDateTime.now(), page);
         if (state.name().equalsIgnoreCase("WAITING") || state.name().equalsIgnoreCase("REJECTED"))
-            bookingLinkedList = bookingRepository.getSpecialStateUserItemBookings(userId, BookingStatus.valueOf(stateIn)
-                    , page);
+            bookingLinkedList = bookingRepository.getSpecialStateUserItemBookings(userId, BookingStatus.valueOf(stateIn),
+                    page);
         if (state.name().equalsIgnoreCase("PAST"))
             bookingLinkedList = bookingRepository.getPastUserItemBookings(userId, LocalDateTime.now(), page);
         if (state.name().equalsIgnoreCase("CURRENT"))
