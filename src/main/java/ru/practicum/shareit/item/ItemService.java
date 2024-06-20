@@ -100,4 +100,11 @@ public class ItemService {
             throw new UserHasNoAccess("Нельзя оставить отзыв без использования");
         return itemMapper.mapCommentToDto(commentRepository.save(itemMapper.mapDtoToComment(comment, user, item)));
     }
+
+    @Transactional
+    public List<ItemDto> getAllItemsByRequestsList(List<Integer> requestId) {
+        return itemRepository.findAllByRequestIdIn(requestId).stream()
+                .map(itemMapper::mapItemToDto)
+                .collect(Collectors.toList());
+    }
 }

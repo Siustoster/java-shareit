@@ -32,7 +32,7 @@ public class ItemMapper {
     }
 
     public ItemDto mapItemToDto(Item item) {
-        return new ItemDto(item.getId(), item.getName(), item.getDescription(), item.getAvailable());
+        return new ItemDto(item.getId(), item.getName(), item.getDescription(), item.getAvailable(), item.getRequestId());
     }
 
 
