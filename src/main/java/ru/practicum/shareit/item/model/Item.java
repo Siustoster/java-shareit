@@ -3,7 +3,7 @@ package ru.practicum.shareit.item.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.User;
 
 import javax.persistence.*;
@@ -24,12 +24,13 @@ public class Item {
     private String description;
     @Column(name = "available")
     private Boolean available;
-    @Column(name = "request_id")
-    private int requestId;
     @JoinColumn(name = "OWNER_ID")
     @NotNull
     @ManyToOne
     private User user;
+    @JoinColumn(name = "request_id")
+    @ManyToOne
+    private ItemRequest request;
 
     public Item(String itemName, String description, boolean available, User user) {
         this.name = itemName;
@@ -44,5 +45,13 @@ public class Item {
         this.description = description;
         this.available = available;
         this.user = user;
+    }
+
+    public Item(String itemName, String description, boolean available, User user, ItemRequest request) {
+        this.name = itemName;
+        this.description = description;
+        this.available = available;
+        this.user = user;
+        this.request = request;
     }
 }

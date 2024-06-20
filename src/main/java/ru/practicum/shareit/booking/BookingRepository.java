@@ -1,7 +1,8 @@
 package ru.practicum.shareit.booking;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.booking.dto.BookingDto;
 
@@ -11,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface BookingRepository extends JpaRepository<Booking, Integer> {
+public interface BookingRepository extends PagingAndSortingRepository<Booking, Integer> {
     Optional<Booking> findById(Integer integer);
 
     @Query("Select bo from Booking as bo" +
@@ -19,70 +20,70 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
             " join bo.item as it" +
             " where u.id=?1" +
             " order by bo.start desc ")
-    LinkedList<Booking> getAllUserBookings(Integer userId);
+    LinkedList<Booking> getAllUserBookings(Integer userId, PageRequest page);
 
     @Query("Select bo from Booking as bo" +
             " join bo.booker as u " +
             " join bo.item as it" +
             " where u.id=?1 and bo.status=?2" +
             " order by bo.start desc ")
-    LinkedList<Booking> getSpecialStateUserBookings(Integer userId, BookingStatus state);
+    LinkedList<Booking> getSpecialStateUserBookings(Integer userId, BookingStatus state, PageRequest page);
 
     @Query("Select bo from Booking as bo" +
             " join bo.booker as u " +
             " join bo.item as it" +
             " where u.id=?1 and bo.start>?2" +
             " order by bo.start desc ")
-    LinkedList<Booking> getAllFutureUserBookings(Integer userId, LocalDateTime now);
+    LinkedList<Booking> getAllFutureUserBookings(Integer userId, LocalDateTime now, PageRequest page);
 
     @Query("Select bo from Booking as bo" +
             " join bo.booker as u " +
             " join bo.item as it" +
             " where it.user.id=?1" +
             " order by bo.start desc ")
-    LinkedList<Booking> getAllUserItemBookings(Integer userId);
+    LinkedList<Booking> getAllUserItemBookings(Integer userId, PageRequest page);
 
     @Query("Select bo from Booking as bo" +
             " join bo.booker as u " +
             " join bo.item as it" +
             " where it.user.id=?1 and bo.start>?2" +
             " order by bo.start desc ")
-    LinkedList<Booking> getFutureUserItemBookings(Integer userId, LocalDateTime now);
+    LinkedList<Booking> getFutureUserItemBookings(Integer userId, LocalDateTime now, PageRequest page);
 
     @Query("Select bo from Booking as bo" +
             " join bo.booker as u " +
             " join bo.item as it" +
             " where it.user.id=?1 and bo.status=?2" +
             " order by bo.start desc ")
-    LinkedList<Booking> getSpecialStateUserItemBookings(Integer userId, BookingStatus now);
+    LinkedList<Booking> getSpecialStateUserItemBookings(Integer userId, BookingStatus now, PageRequest page);
 
     @Query("Select bo from Booking as bo" +
             " join bo.booker as u " +
             " join bo.item as it" +
             " where u.id=?1 and bo.end<?2" +
             " order by bo.start desc ")
-    LinkedList<Booking> getAllPastUserBookings(Integer userId, LocalDateTime now);
+    LinkedList<Booking> getAllPastUserBookings(Integer userId, LocalDateTime now, PageRequest page);
 
     @Query("Select bo from Booking as bo" +
             " join bo.booker as u " +
             " join bo.item as it" +
             " where u.id=?1 and bo.end>?2 and bo.start<?2" +
             " order by bo.start desc ")
-    LinkedList<Booking> getAllCurrentUserBookings(Integer userId, LocalDateTime now);
+    LinkedList<Booking> getAllCurrentUserBookings(Integer userId, LocalDateTime now, PageRequest page);
 
     @Query("Select bo from Booking as bo" +
             " join bo.booker as u " +
             " join bo.item as it" +
             " where it.user.id=?1 and bo.end<?2" +
             " order by bo.start desc ")
-    LinkedList<Booking> getPastUserItemBookings(Integer userId, LocalDateTime now);
+    LinkedList<Booking> getPastUserItemBookings(Integer userId, LocalDateTime now, PageRequest page);
 
     @Query("Select bo from Booking as bo" +
             " join bo.booker as u " +
             " join bo.item as it" +
             " where it.user.id=?1 and bo.end>?2 and bo.start<?2" +
             " order by bo.start desc ")
-    LinkedList<Booking> getCurrentUserBookings(Integer userId, LocalDateTime now);
+    LinkedList<Booking> getCurrentUserBookings(Integer userId, LocalDateTime now, PageRequest page);
 
     List<BookingDto> findFirst1ByItemIdAndStartIsBeforeAndStatusOrderByStartDesc(Integer itemId,
                                                                                  LocalDateTime start,

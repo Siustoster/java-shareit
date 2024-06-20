@@ -14,6 +14,8 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoWithBooking;
 import ru.practicum.shareit.item.dto.ItemDtoWithBookingAndComment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserService;
 
@@ -30,11 +32,18 @@ public class ItemService {
     private final ItemMapper itemMapper;
     private final CommentRepository commentRepository;
     private final BookingRepository bookingService;
+    private final ItemRequestRepository requestRepository;
 
     @Transactional
     public ItemDto createItem(ItemDto itemDto, int userId) {
         User user = userService.getUser(userId);
-        Item item = itemMapper.mapDtoToItem(itemDto, user);
+        ItemRequest request = null;
+        if (itemDto.getRequestId() != null && itemDto.getRequestId() > 0)
+            request = requestRepository.findById(itemDto.getRequestId())
+                    .orElseThrow(() -> new NotFoundException("Не найден запрос"));
+        Item item = itemMapper.mapDtoToItem(itemDto, user, request);
+
+
         return itemMapper.mapItemToDto(itemRepository.save(item));
     }
 

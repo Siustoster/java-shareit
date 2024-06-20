@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingInputDto;
@@ -80,42 +81,43 @@ public class BookingService {
 
     }
 
-    public LinkedList<Booking> getBookingByUser(int userId, String stateIn) {
+    public LinkedList<Booking> getBookingByUser(int userId, String stateIn, PageRequest page) {
         User user = userService.getUser(userId);
         LinkedList<Booking> bookingLinkedList = new LinkedList<>();
         if (BookingState.findByName(stateIn) == null)
             throw new RuntimeException("Unknown state: " + stateIn);
         BookingState state = BookingState.findByName(stateIn);
         if (state.name().equalsIgnoreCase("ALL"))
-            bookingLinkedList = bookingRepository.getAllUserBookings(userId);
+            bookingLinkedList = bookingRepository.getAllUserBookings(userId, page);
         if (state.name().equalsIgnoreCase("FUTURE"))
-            bookingLinkedList = bookingRepository.getAllFutureUserBookings(userId, LocalDateTime.now());
+            bookingLinkedList = bookingRepository.getAllFutureUserBookings(userId, LocalDateTime.now(), page);
         if (state.name().equalsIgnoreCase("WAITING") || state.name().equalsIgnoreCase("REJECTED"))
-            bookingLinkedList = bookingRepository.getSpecialStateUserBookings(userId, BookingStatus.valueOf(stateIn));
+            bookingLinkedList = bookingRepository.getSpecialStateUserBookings(userId, BookingStatus.valueOf(stateIn), page);
         if (state.name().equalsIgnoreCase("PAST"))
-            bookingLinkedList = bookingRepository.getAllPastUserBookings(userId, LocalDateTime.now());
+            bookingLinkedList = bookingRepository.getAllPastUserBookings(userId, LocalDateTime.now(), page);
         if (state.name().equalsIgnoreCase("CURRENT"))
-            bookingLinkedList = bookingRepository.getAllCurrentUserBookings(userId, LocalDateTime.now());
+            bookingLinkedList = bookingRepository.getAllCurrentUserBookings(userId, LocalDateTime.now(), page);
 
         return bookingLinkedList;
     }
 
-    public LinkedList<Booking> getBookingByUserItems(int userId, String stateIn) {
+    public LinkedList<Booking> getBookingByUserItems(int userId, String stateIn, PageRequest page) {
         User user = userService.getUser(userId);
         LinkedList<Booking> bookingLinkedList = new LinkedList<>();
         if (BookingState.findByName(stateIn) == null)
             throw new RuntimeException("Unknown state: " + stateIn);
         BookingState state = BookingState.findByName(stateIn);
         if (state.name().equalsIgnoreCase("ALL"))
-            bookingLinkedList = bookingRepository.getAllUserItemBookings(userId);
+            bookingLinkedList = bookingRepository.getAllUserItemBookings(userId, page);
         if (state.name().equalsIgnoreCase("FUTURE"))
-            bookingLinkedList = bookingRepository.getFutureUserItemBookings(userId, LocalDateTime.now());
+            bookingLinkedList = bookingRepository.getFutureUserItemBookings(userId, LocalDateTime.now(), page);
         if (state.name().equalsIgnoreCase("WAITING") || state.name().equalsIgnoreCase("REJECTED"))
-            bookingLinkedList = bookingRepository.getSpecialStateUserItemBookings(userId, BookingStatus.valueOf(stateIn));
+            bookingLinkedList = bookingRepository.getSpecialStateUserItemBookings(userId, BookingStatus.valueOf(stateIn)
+                    , page);
         if (state.name().equalsIgnoreCase("PAST"))
-            bookingLinkedList = bookingRepository.getPastUserItemBookings(userId, LocalDateTime.now());
+            bookingLinkedList = bookingRepository.getPastUserItemBookings(userId, LocalDateTime.now(), page);
         if (state.name().equalsIgnoreCase("CURRENT"))
-            bookingLinkedList = bookingRepository.getCurrentUserBookings(userId, LocalDateTime.now());
+            bookingLinkedList = bookingRepository.getCurrentUserBookings(userId, LocalDateTime.now(), page);
 
         return bookingLinkedList;
     }

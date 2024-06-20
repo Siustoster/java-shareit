@@ -1,7 +1,10 @@
 package ru.practicum.shareit.request;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.exception.BadParameterException;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestDtoOutWithItems;
 
@@ -27,15 +30,18 @@ public class ItemRequestController {
     }
 
     @GetMapping("/all")
-    public List<ItemRequest> getAllRequests(@RequestHeader(header) int userId,
-                                            @RequestParam(defaultValue = "0") int from,
-                                            @RequestParam(defaultValue = "1") int size) {
-        return null;
+    public List<ItemRequestDtoOutWithItems> getAllRequests(@RequestHeader(header) int userId,
+                                                           @RequestParam(defaultValue = "0") int from,
+                                                           @RequestParam(defaultValue = "10") int size) {
+        if (from < 0 || size < 1)
+            throw new BadParameterException("Неверные параметры страницы");
+        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size, Sort.by("created").ascending());
+        return requestService.getAllRequests(userId, page);
     }
 
     @GetMapping("/{requestId}")
-    public ItemRequest getRequest(@RequestHeader(header) int userId,
-                                  @PathVariable int requestId) {
-        return null;
+    public ItemRequestDtoOutWithItems getRequest(@RequestHeader(header) int userId,
+                                                 @PathVariable int requestId) {
+        return requestService.getRequestById(userId, requestId);
     }
 }

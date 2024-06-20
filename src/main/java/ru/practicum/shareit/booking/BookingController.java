@@ -1,8 +1,10 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingInputDto;
+import ru.practicum.shareit.exception.BadParameterException;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -35,13 +37,23 @@ public class BookingController {
 
     @GetMapping
     public List<Booking> getAllBookingsOfCurrentUser(@RequestHeader(header) int userId,
-                                                     @RequestParam(defaultValue = "ALL") String state) {
-        return bookingService.getBookingByUser(userId, state);
+                                                     @RequestParam(defaultValue = "ALL") String state,
+                                                     @RequestParam(defaultValue = "0") int from,
+                                                     @RequestParam(defaultValue = "10") int size) {
+        if (from < 0 || size < 1)
+            throw new BadParameterException("Неверные параметры страницы");
+        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
+        return bookingService.getBookingByUser(userId, state, page);
     }
 
     @GetMapping("/owner")
     public List<Booking> getAllBookingsForAllUserItems(@RequestHeader(header) int userId,
-                                                       @RequestParam(defaultValue = "ALL") String state) {
-        return bookingService.getBookingByUserItems(userId, state);
+                                                       @RequestParam(defaultValue = "ALL") String state,
+                                                       @RequestParam(defaultValue = "0") int from,
+                                                       @RequestParam(defaultValue = "10") int size) {
+        if (from < 0 || size < 1)
+            throw new BadParameterException("Неверные параметры страницы");
+        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
+        return bookingService.getBookingByUserItems(userId, state, page);
     }
 }
