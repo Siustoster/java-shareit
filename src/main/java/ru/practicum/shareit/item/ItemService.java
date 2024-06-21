@@ -22,6 +22,7 @@ import ru.practicum.shareit.user.UserService;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -70,7 +71,7 @@ public class ItemService {
         List<CommentDto> comments = commentRepository.findAllByItemId(itemId).stream()
                 .map(itemMapper::mapCommentToDto)
                 .collect(Collectors.toList());
-        if (item.getUser().getId() == user.getId())
+        if (Objects.equals(item.getUser().getId(), user.getId()))
             return itemMapper.mapItemToDtoWithBookingAndComment(item, true, comments);
         else return itemMapper.mapItemToDtoWithBookingAndComment(item, false, comments);
         // return itemMapper.mapItemToDto(itemRepository.findByIdAndUserId(itemId,userId));

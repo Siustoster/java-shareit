@@ -13,6 +13,7 @@ import ru.practicum.shareit.user.UserService;
 
 import java.time.LocalDateTime;
 import java.util.LinkedList;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Service
@@ -56,8 +57,8 @@ public class BookingService {
         if (!booking.getStatus().name().equalsIgnoreCase("WAITING"))
             throw new BadParameterException("Заявка уже рассмотрена");
         User user = userService.getUser(userId);
-        if (booking.getItem().getUser().getId() != user.getId())
-            if (booking.getBooker().getId() != user.getId())
+        if (!Objects.equals(booking.getItem().getUser().getId(), user.getId()))
+            if (!Objects.equals(booking.getBooker().getId(), user.getId()))
                 throw new UserHasNoAccess("У вас нет доступа к бронированию");
             else throw new WrongOwnerException("Вы не владелец вещи");
         if (approved.equalsIgnoreCase("true"))
@@ -73,7 +74,7 @@ public class BookingService {
                 " с айди " + bookingId
                 + " не найдено"));
 
-        if (booking.getBooker().getId() == user.getId() || booking.getItem().getUser().getId() == user.getId())
+        if (Objects.equals(booking.getBooker().getId(), user.getId()) || Objects.equals(booking.getItem().getUser().getId(), user.getId()))
             return booking;
         else
             throw new WrongOwnerException("Пользователь не является владельцем вещи " +
