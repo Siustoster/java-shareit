@@ -38,7 +38,7 @@ public class BookingService {
         if (bookingInput.getEnd().isBefore(bookingInput.getStart()))
             throw new BadDateException("Некорректная дата конца бронирования");
         if (bookingInput.getStart().isEqual(bookingInput.getEnd()))
-            throw new BadDateException("Некорректная период бронирования");
+            throw new BadDateException("Некорректный период бронирования");
         if (itemService.getFullItemById(bookingInput.getItemId()).getUser().getId() == userId)
             throw new WrongOwnerException("Владелец не может забронировать свою вещь");
 
