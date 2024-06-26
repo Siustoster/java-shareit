@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.booking.BookingService;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.ItemService;
@@ -15,6 +16,7 @@ import ru.practicum.shareit.user.UserService;
 
 import javax.transaction.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -58,7 +60,9 @@ public class ItemRequestServiceTest {
     void getAllRequests() {
         int userId = userService.createUser(user).getId();
         ItemRequest itemRequest = requestService.createNewRequest(itemRequestDto, userId);
-        List<ItemRequestDtoOutWithItems> itemRequests = requestService.getAllUsersRequests(userId);
+        int userId2 = userService.createUser(user2).getId();
+        //PageRequest.of(0,5);
+        List<ItemRequestDtoOutWithItems> itemRequests = requestService.getAllRequests(userId2, PageRequest.of(0, 5));
         assertThat(itemRequests.size(), equalTo(1));
         assertThat(itemRequests.get(0).getId(), equalTo(itemRequest.getId()));
     }
@@ -94,5 +98,11 @@ public class ItemRequestServiceTest {
         assertThat(itemRequestWithItem.get(0).getId(), equalTo(createdRequest.getId()));
         assertThat(itemRequestWithItem.get(0).getItems().size(), equalTo(1));
         assertThat(itemRequestWithItem.get(0).getItems().get(0).getId(), equalTo(createdItem.getId()));
+    }
+
+    @Test
+    void getRequestsAndItemsEmpty() {
+        List<ItemRequestDtoOutWithItems> itemRequestWithItem = requestService.getRequestsAndItems(new ArrayList<>());
+        assertThat(itemRequestWithItem.size(), equalTo(0));
     }
 }

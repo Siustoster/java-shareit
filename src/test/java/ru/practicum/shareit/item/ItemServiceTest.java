@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.booking.BookingService;
 import ru.practicum.shareit.booking.dto.BookingInputDto;
+import ru.practicum.shareit.exception.BadParameterException;
 import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.UserHasNoAccess;
 import ru.practicum.shareit.exception.WrongOwnerException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -120,5 +122,56 @@ public class ItemServiceTest {
         ItemDto createdItem = itemService.createItem(item, userId);
         Item fullItem = itemService.getFullItemById(createdItem.getId());
         assertThat(createdItem.getId(), equalTo(fullItem.getId()));
+    }
+
+    @Test
+    void postCommentFailByEmptyText() throws InterruptedException {
+        User userDto1 = new User(0, "Andrey", "andrey@mail.ru");
+        User savedOwner = userService.createUser(userDto1);
+        User userDto2 = new User(0, "Vladimir", "vladimir@mail.ru");
+        User savedBooker = userService.createUser(userDto2);
+        ItemDto itemDto = new ItemDto(0, "Отвёртка", "Отвёртка электрическая",
+                Boolean.valueOf("true"), null);
+        ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
+        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.now().plusSeconds(1),
+                LocalDateTime.now().plusSeconds(2));
+        bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
+        sleep(3000);
+        CommentDto failedComment = new CommentDto(null, "", null, null);
+        assertThrows(BadParameterException.class, () -> itemService.postComment(failedComment, savedBooker.getId(), savedItem.getId()));
+    }
+
+    @Test
+    void postCommentFailByNotBookedBefore() throws InterruptedException {
+        User userDto1 = new User(0, "Andrey", "andrey@mail.ru");
+        User savedOwner = userService.createUser(userDto1);
+        User userDto2 = new User(0, "Vladimir", "vladimir@mail.ru");
+        User savedBooker = userService.createUser(userDto2);
+        ItemDto itemDto = new ItemDto(0, "Отвёртка", "Отвёртка электрическая",
+                Boolean.valueOf("true"), null);
+        ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
+        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.now().plusSeconds(1),
+                LocalDateTime.now().plusSeconds(2));
+        assertThrows(UserHasNoAccess.class, () -> itemService.postComment(comment, savedBooker.getId(), savedItem.getId()));
+    }
+
+    @Test
+    void getItemByIdAndUserIdAnotherUser() {
+        int userId = userService.createUser(user).getId();
+        int userId2 = userService.createUser(new User(null, "Name", "email@mail.ru")).getId();
+        ItemDto createdItem = itemService.createItem(item, userId);
+        ItemDtoWithBookingAndComment itemDto = itemService.getItemByIdAndUserId(userId2, createdItem.getId());
+        assertThat(itemDto.getId(), equalTo(createdItem.getId()));
+        assertThat(itemDto.getComments(), empty());
+        assertThat(itemDto.getLastBooking(), nullValue());
+        assertThat(itemDto.getNextBooking(), nullValue());
+    }
+
+    @Test
+    void searchItemEmptyString() {
+        int userId = userService.createUser(user).getId();
+        ItemDto createdItem = itemService.createItem(item, userId);
+        List<ItemDto> searchItemList = itemService.searchItem("", userId);
+        assertThat(searchItemList.size(), equalTo(0));
     }
 }

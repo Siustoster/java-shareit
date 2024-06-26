@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.booking.dto.BookingInputDto;
-import ru.practicum.shareit.exception.BadDateException;
-import ru.practicum.shareit.exception.ItemIsUnavailableExeption;
-import ru.practicum.shareit.exception.UserHasNoAccess;
-import ru.practicum.shareit.exception.WrongOwnerException;
+import ru.practicum.shareit.exception.*;
 import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.User;
@@ -165,7 +162,6 @@ public class BookingServiceTest {
 
     @Test
     void addFailByStartDate() {
-
         User userDto1 = new User(0, "Andrey", "andrey@mail.ru");
         User savedOwner = userService.createUser(userDto1);
         User userDto2 = new User(0, "Vladimir", "vladimir@mail.ru");
@@ -182,7 +178,6 @@ public class BookingServiceTest {
 
     @Test
     void addFailByEndDate() {
-
         User userDto1 = new User(0, "Andrey", "andrey@mail.ru");
         User savedOwner = userService.createUser(userDto1);
         User userDto2 = new User(0, "Vladimir", "vladimir@mail.ru");
@@ -212,4 +207,325 @@ public class BookingServiceTest {
         assertThrows(ItemIsUnavailableExeption.class, () -> bookingService.createBooking(savedBooker.getId(), bookingDtoForIn));
     }
 
+    @Test
+    void addFailByStartDateNull() {
+        User userDto1 = new User(0, "Andrey", "andrey@mail.ru");
+        User savedOwner = userService.createUser(userDto1);
+        User userDto2 = new User(0, "Vladimir", "vladimir@mail.ru");
+        User savedBooker = userService.createUser(userDto2);
+        ItemDto itemDto = new ItemDto(0, "Отвёртка", "Отвёртка электрическая",
+                Boolean.valueOf("true"), null);
+        ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
+        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), null,
+                null);
+        // bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
+        assertThrows(BadDateException.class, () -> bookingService.createBooking(savedBooker.getId(), bookingDtoForIn));
+    }
+
+    @Test
+    void addFailByEndDateNull() {
+        User userDto1 = new User(0, "Andrey", "andrey@mail.ru");
+        User savedOwner = userService.createUser(userDto1);
+        User userDto2 = new User(0, "Vladimir", "vladimir@mail.ru");
+        User savedBooker = userService.createUser(userDto2);
+        ItemDto itemDto = new ItemDto(0, "Отвёртка", "Отвёртка электрическая",
+                Boolean.valueOf("true"), null);
+        ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
+        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024,
+                6, 30, 9, 0),
+                null);
+        // bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
+        assertThrows(BadDateException.class, () -> bookingService.createBooking(savedBooker.getId(), bookingDtoForIn));
+    }
+
+    @Test
+    void addFailByEndDateLessStart() {
+        User userDto1 = new User(0, "Andrey", "andrey@mail.ru");
+        User savedOwner = userService.createUser(userDto1);
+        User userDto2 = new User(0, "Vladimir", "vladimir@mail.ru");
+        User savedBooker = userService.createUser(userDto2);
+        ItemDto itemDto = new ItemDto(0, "Отвёртка", "Отвёртка электрическая",
+                Boolean.valueOf("true"), null);
+        ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
+        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024,
+                6, 30, 9, 0),
+                LocalDateTime.of(2024,
+                        6, 29, 9, 0));
+        // bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
+        assertThrows(BadDateException.class, () -> bookingService.createBooking(savedBooker.getId(), bookingDtoForIn));
+    }
+
+    @Test
+    void addFailByEndDateEqualsStart() {
+        User userDto1 = new User(0, "Andrey", "andrey@mail.ru");
+        User savedOwner = userService.createUser(userDto1);
+        User userDto2 = new User(0, "Vladimir", "vladimir@mail.ru");
+        User savedBooker = userService.createUser(userDto2);
+        ItemDto itemDto = new ItemDto(0, "Отвёртка", "Отвёртка электрическая",
+                Boolean.valueOf("true"), null);
+        ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
+        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024,
+                6, 30, 9, 0),
+                LocalDateTime.of(2024,
+                        6, 30, 9, 0));
+
+        assertThrows(BadDateException.class, () -> bookingService.createBooking(savedBooker.getId(), bookingDtoForIn));
+    }
+
+    @Test
+    void addBookingFailByOwner() {
+        User userDto1 = new User(0, "Andrey", "andrey@mail.ru");
+        User savedOwner = userService.createUser(userDto1);
+        User userDto2 = new User(0, "Vladimir", "vladimir@mail.ru");
+        User savedBooker = userService.createUser(userDto2);
+        ItemDto itemDto = new ItemDto(0, "Отвёртка", "Отвёртка электрическая",
+                Boolean.valueOf("true"), null);
+        ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
+        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024,
+                6, 30, 9, 0),
+                LocalDateTime.of(2024, 6, 30, 10, 0));
+        assertThrows(WrongOwnerException.class, () -> bookingService.createBooking(savedOwner.getId(), bookingDtoForIn));
+    }
+
+    @Test
+    void approveBookingFailAlreadyApproved() {
+        User userDto1 = new User(null, "Andrey", "andrey@mail.ru");
+        User savedOwner = userService.createUser(userDto1);
+        User userDto2 = new User(null, "Vladimir", "vladimir@mail.ru");
+        User savedBooker = userService.createUser(userDto2);
+        ItemDto itemDto = new ItemDto(null, "Отвёртка", "Отвёртка электрическая",
+                Boolean.valueOf("true"), null);
+        ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
+        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024,
+                6, 30, 9, 0),
+                LocalDateTime.of(2024, 6, 30, 10, 0));
+        Booking bookingDtoForOut = bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
+        assertThat(BookingStatus.WAITING, equalTo(bookingDtoForOut.getStatus()));
+        Booking bookingDtoForOutAPPROVED = bookingService.approveBooking(savedOwner.getId(),
+                bookingDtoForOut.getId(), true);
+        assertThat(BookingStatus.APPROVED, equalTo(bookingDtoForOutAPPROVED.getStatus()));
+        assertThrows(BadParameterException.class, () -> bookingService.approveBooking(savedOwner.getId(),
+                bookingDtoForOut.getId(), true));
+    }
+
+    @Test
+    void approveBookingReject() {
+        User userDto1 = new User(null, "Andrey", "andrey@mail.ru");
+        User savedOwner = userService.createUser(userDto1);
+        User userDto2 = new User(null, "Vladimir", "vladimir@mail.ru");
+        User savedBooker = userService.createUser(userDto2);
+        ItemDto itemDto = new ItemDto(null, "Отвёртка", "Отвёртка электрическая",
+                Boolean.valueOf("true"), null);
+        ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
+        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024,
+                6, 30, 9, 0),
+                LocalDateTime.of(2024, 6, 30, 10, 0));
+        Booking bookingDtoForOut = bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
+        assertThat(BookingStatus.WAITING, equalTo(bookingDtoForOut.getStatus()));
+        Booking bookingDtoForOutAPPROVED = bookingService.approveBooking(savedOwner.getId(),
+                bookingDtoForOut.getId(), false);
+        assertThat(BookingStatus.REJECTED, equalTo(bookingDtoForOutAPPROVED.getStatus()));
+    }
+
+    @Test
+    void approveBookingFailNotOwner() {
+        User userDto1 = new User(null, "Andrey", "andrey@mail.ru");
+        User savedOwner = userService.createUser(userDto1);
+        User userDto2 = new User(null, "Vladimir", "vladimir@mail.ru");
+        User savedBooker = userService.createUser(userDto2);
+        User userDto3 = new User(null, "user", "user@mail.ru");
+        User savedUser3 = userService.createUser(userDto3);
+        ItemDto itemDto = new ItemDto(null, "Отвёртка", "Отвёртка электрическая",
+                Boolean.valueOf("true"), null);
+        ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
+        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024,
+                6, 30, 9, 0),
+                LocalDateTime.of(2024, 6, 30, 10, 0));
+        Booking bookingDtoForOut = bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
+        assertThat(BookingStatus.WAITING, equalTo(bookingDtoForOut.getStatus()));
+        assertThrows(WrongOwnerException.class, () -> bookingService.approveBooking(savedBooker.getId(),
+                bookingDtoForOut.getId(), false));
+    }
+
+    @Test
+    void getBookingByUserFailState() {
+        User userDto1 = new User(null, "Andrey", "andrey@mail.ru");
+        User savedOwner = userService.createUser(userDto1);
+        User userDto2 = new User(null, "Vladimir", "vladimir@mail.ru");
+        User savedBooker = userService.createUser(userDto2);
+        ItemDto itemDto = new ItemDto(null, "Отвёртка", "Отвёртка электрическая",
+                Boolean.valueOf("true"), null);
+        ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
+        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024, 6,
+                30, 9, 0), LocalDateTime.of(2024, 6, 30, 10, 0));
+        Booking bookingDtoForOut = bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
+        assertThrows(RuntimeException.class, () -> bookingService.getBookingByUser(savedBooker.getId(), "ALL123123",
+                PageRequest.of(0, 5)));
+    }
+
+    @Test
+    void getBookingByUserFuture() {
+        User userDto1 = new User(null, "Andrey", "andrey@mail.ru");
+        User savedOwner = userService.createUser(userDto1);
+        User userDto2 = new User(null, "Vladimir", "vladimir@mail.ru");
+        User savedBooker = userService.createUser(userDto2);
+        ItemDto itemDto = new ItemDto(null, "Отвёртка", "Отвёртка электрическая",
+                Boolean.valueOf("true"), null);
+        ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
+        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024, 6,
+                30, 9, 0), LocalDateTime.of(2024, 6, 30, 10, 0));
+        Booking bookingDtoForOut = bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
+        List<Booking> bookingList = bookingService.getBookingByUser(savedBooker.getId(), "FUTURE",
+                PageRequest.of(0, 5));
+        assertThat(bookingList.size(), equalTo(1));
+    }
+
+    @Test
+    void getBookingByUserWaitingAndRejected() {
+        User userDto1 = new User(null, "Andrey", "andrey@mail.ru");
+        User savedOwner = userService.createUser(userDto1);
+        User userDto2 = new User(null, "Vladimir", "vladimir@mail.ru");
+        User savedBooker = userService.createUser(userDto2);
+        ItemDto itemDto = new ItemDto(null, "Отвёртка", "Отвёртка электрическая",
+                Boolean.valueOf("true"), null);
+        ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
+        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024, 6,
+                30, 9, 0), LocalDateTime.of(2024, 6, 30, 10, 0));
+        Booking bookingDtoForOut = bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
+        List<Booking> bookingList = bookingService.getBookingByUser(savedBooker.getId(), "WAITING",
+                PageRequest.of(0, 5));
+        assertThat(bookingList.size(), equalTo(1));
+        bookingList = bookingService.getBookingByUser(savedBooker.getId(), "REJECTED",
+                PageRequest.of(0, 5));
+        assertThat(bookingList.size(), equalTo(0));
+        bookingService.approveBooking(savedOwner.getId(), bookingDtoForOut.getId(), false);
+        bookingList = bookingService.getBookingByUser(savedBooker.getId(), "REJECTED",
+                PageRequest.of(0, 5));
+        assertThat(bookingList.size(), equalTo(1));
+    }
+
+    @Test
+    void getBookingByUserPast() {
+        User userDto1 = new User(null, "Andrey", "andrey@mail.ru");
+        User savedOwner = userService.createUser(userDto1);
+        User userDto2 = new User(null, "Vladimir", "vladimir@mail.ru");
+        User savedBooker = userService.createUser(userDto2);
+        ItemDto itemDto = new ItemDto(null, "Отвёртка", "Отвёртка электрическая",
+                Boolean.valueOf("true"), null);
+        ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
+        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024, 6,
+                30, 9, 0), LocalDateTime.of(2024, 6, 30, 10, 0));
+        Booking bookingDtoForOut = bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
+        List<Booking> bookingList = bookingService.getBookingByUser(savedBooker.getId(), "PAST",
+                PageRequest.of(0, 5));
+        assertThat(bookingList.size(), equalTo(0));
+    }
+
+    @Test
+    void getBookingByUserCurrent() {
+        User userDto1 = new User(null, "Andrey", "andrey@mail.ru");
+        User savedOwner = userService.createUser(userDto1);
+        User userDto2 = new User(null, "Vladimir", "vladimir@mail.ru");
+        User savedBooker = userService.createUser(userDto2);
+        ItemDto itemDto = new ItemDto(null, "Отвёртка", "Отвёртка электрическая",
+                Boolean.valueOf("true"), null);
+        ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
+        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024, 6,
+                30, 9, 0), LocalDateTime.of(2024, 6, 30, 10, 0));
+        Booking bookingDtoForOut = bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
+        List<Booking> bookingList = bookingService.getBookingByUser(savedBooker.getId(), "CURRENT",
+                PageRequest.of(0, 5));
+        assertThat(bookingList.size(), equalTo(0));
+    }
+
+    @Test
+    void getBookingByUserItemsFailState() {
+        User userDto1 = new User(null, "Andrey", "andrey@mail.ru");
+        User savedOwner = userService.createUser(userDto1);
+        User userDto2 = new User(null, "Vladimir", "vladimir@mail.ru");
+        User savedBooker = userService.createUser(userDto2);
+        ItemDto itemDto = new ItemDto(null, "Отвёртка", "Отвёртка электрическая",
+                Boolean.valueOf("true"), null);
+        ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
+        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024, 6,
+                30, 9, 0), LocalDateTime.of(2024, 6, 30, 10, 0));
+        Booking bookingDtoForOut = bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
+        assertThrows(RuntimeException.class, () -> bookingService.getBookingByUserItems(savedOwner.getId(), "ALL123123",
+                PageRequest.of(0, 5)));
+    }
+
+    @Test
+    void getBookingByUserItemsCurrent() {
+        User userDto1 = new User(null, "Andrey", "andrey@mail.ru");
+        User savedOwner = userService.createUser(userDto1);
+        User userDto2 = new User(null, "Vladimir", "vladimir@mail.ru");
+        User savedBooker = userService.createUser(userDto2);
+        ItemDto itemDto = new ItemDto(null, "Отвёртка", "Отвёртка электрическая",
+                Boolean.valueOf("true"), null);
+        ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
+        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024, 6,
+                30, 9, 0), LocalDateTime.of(2024, 6, 30, 10, 0));
+        Booking bookingDtoForOut = bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
+        List<Booking> bookingList = bookingService.getBookingByUserItems(savedOwner.getId(), "CURRENT",
+                PageRequest.of(0, 5));
+        assertThat(bookingList.size(), equalTo(0));
+    }
+
+    @Test
+    void getBookingByUserItemPast() {
+        User userDto1 = new User(null, "Andrey", "andrey@mail.ru");
+        User savedOwner = userService.createUser(userDto1);
+        User userDto2 = new User(null, "Vladimir", "vladimir@mail.ru");
+        User savedBooker = userService.createUser(userDto2);
+        ItemDto itemDto = new ItemDto(null, "Отвёртка", "Отвёртка электрическая",
+                Boolean.valueOf("true"), null);
+        ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
+        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024, 6,
+                30, 9, 0), LocalDateTime.of(2024, 6, 30, 10, 0));
+        Booking bookingDtoForOut = bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
+        List<Booking> bookingList = bookingService.getBookingByUserItems(savedOwner.getId(), "PAST",
+                PageRequest.of(0, 5));
+        assertThat(bookingList.size(), equalTo(0));
+    }
+
+    @Test
+    void getBookingByUserItemsWaitingAndRejected() {
+        User userDto1 = new User(null, "Andrey", "andrey@mail.ru");
+        User savedOwner = userService.createUser(userDto1);
+        User userDto2 = new User(null, "Vladimir", "vladimir@mail.ru");
+        User savedBooker = userService.createUser(userDto2);
+        ItemDto itemDto = new ItemDto(null, "Отвёртка", "Отвёртка электрическая",
+                Boolean.valueOf("true"), null);
+        ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
+        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024, 6,
+                30, 9, 0), LocalDateTime.of(2024, 6, 30, 10, 0));
+        Booking bookingDtoForOut = bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
+        List<Booking> bookingList = bookingService.getBookingByUserItems(savedOwner.getId(), "WAITING",
+                PageRequest.of(0, 5));
+        assertThat(bookingList.size(), equalTo(1));
+        bookingList = bookingService.getBookingByUserItems(savedOwner.getId(), "REJECTED",
+                PageRequest.of(0, 5));
+        assertThat(bookingList.size(), equalTo(0));
+        bookingService.approveBooking(savedOwner.getId(), bookingDtoForOut.getId(), false);
+        bookingList = bookingService.getBookingByUserItems(savedOwner.getId(), "REJECTED",
+                PageRequest.of(0, 5));
+        assertThat(bookingList.size(), equalTo(1));
+    }
+
+    @Test
+    void getBookingByUserItemFuture() {
+        User userDto1 = new User(null, "Andrey", "andrey@mail.ru");
+        User savedOwner = userService.createUser(userDto1);
+        User userDto2 = new User(null, "Vladimir", "vladimir@mail.ru");
+        User savedBooker = userService.createUser(userDto2);
+        ItemDto itemDto = new ItemDto(null, "Отвёртка", "Отвёртка электрическая",
+                Boolean.valueOf("true"), null);
+        ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
+        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024, 6,
+                30, 9, 0), LocalDateTime.of(2024, 6, 30, 10, 0));
+        Booking bookingDtoForOut = bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
+        List<Booking> bookingList = bookingService.getBookingByUserItems(savedOwner.getId(), "FUTURE",
+                PageRequest.of(0, 5));
+        assertThat(bookingList.size(), equalTo(1));
+    }
 }
