@@ -48,9 +48,7 @@ public class BookingService {
     }
 
     @Transactional
-    public Booking approveBooking(int userId, int bookingId, String approved) {
-        if (!(approved.equalsIgnoreCase("true")) && !(approved.equalsIgnoreCase("false")))
-            throw new BadParameterException("Неправильный параметр approved");
+    public Booking approveBooking(int userId, int bookingId, Boolean approved) {
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException("Бронирование" +
                 " с айди " + bookingId
                 + " не найдено"));
@@ -61,7 +59,7 @@ public class BookingService {
             if (!Objects.equals(booking.getBooker().getId(), user.getId()))
                 throw new UserHasNoAccess("У вас нет доступа к бронированию");
             else throw new WrongOwnerException("Вы не владелец вещи");
-        if (approved.equalsIgnoreCase("true"))
+        if (approved)
             booking.setStatus(BookingStatus.APPROVED);
         else booking.setStatus(BookingStatus.REJECTED);
         return bookingRepository.save(booking);
@@ -121,11 +119,6 @@ public class BookingService {
             bookingLinkedList = bookingRepository.getCurrentUserBookings(userId, LocalDateTime.now(), page);
 
         return bookingLinkedList;
-    }
-
-    public Boolean checkUserUsedItem(int userId, int itemId) {
-        return !bookingRepository.findFirst1ByItemIdAndBookerIdAndEndIsBefore(itemId, userId,
-                LocalDateTime.now()).isEmpty();
     }
 
 }

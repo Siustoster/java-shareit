@@ -10,15 +10,6 @@ import java.util.Map;
 @RestControllerAdvice
 public class ErrorHandler {
 
-    @ExceptionHandler(EmailAlreadyExistsException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public Map<String, String> handleExceptionEmailExists(final RuntimeException e) {
-        return Map.of(
-                "error", "Ошибка при выполнении запроса",
-                "Error message", e.getMessage()
-        );
-    }
-
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleExceptionNotFound(final RuntimeException e) {

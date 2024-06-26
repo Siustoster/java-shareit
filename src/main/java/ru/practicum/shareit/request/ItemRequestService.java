@@ -49,7 +49,7 @@ public class ItemRequestService {
         return getRequestsAndItems(List.of(request)).get(0);
     }
 
-    private List<ItemRequestDtoOutWithItems> getRequestsAndItems(List<ItemRequest> requests) {
+    protected List<ItemRequestDtoOutWithItems> getRequestsAndItems(List<ItemRequest> requests) {
         if (requests.isEmpty())
             return requests.stream().map(request -> requestMapper.mapRequestToDtoOutWithItems(request, new ArrayList<ItemDto>()))
                     .collect(Collectors.toList());

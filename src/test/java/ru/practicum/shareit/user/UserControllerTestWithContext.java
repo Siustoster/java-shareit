@@ -9,7 +9,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
@@ -65,7 +64,7 @@ public class UserControllerTestWithContext {
 
     @Test
     void getAllUsers() throws Exception {
-        Collection<User> usersList = List.of(user, user2);
+        List<User> usersList = List.of(user, user2);
         when(userService.getAllUsers())
                 .thenReturn(usersList);
 

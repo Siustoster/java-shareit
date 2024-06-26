@@ -24,14 +24,6 @@ public class ItemMapper {
     private final BookingRepository bookingRepository;
     private final BookingMapper bookingMapper = new BookingMapper();
 
-    public Item mapDtoToItem(ItemDto item, int itemId, User user) {
-        return new Item(itemId, item.getName(), item.getDescription(), item.getAvailable(), user);
-    }
-
-    public Item mapDtoToItem(ItemDto item, User user) {
-        return new Item(item.getName(), item.getDescription(), item.getAvailable(), user);
-    }
-
     public Item mapDtoToItem(ItemDto item, User user, ItemRequest request) {
         return new Item(item.getName(), item.getDescription(), item.getAvailable(), user, request);
     }
@@ -42,7 +34,6 @@ public class ItemMapper {
         else return new ItemDto(item.getId(), item.getName(), item.getDescription(), item.getAvailable(),
                 item.getRequest().getId());
     }
-
 
     public ItemDtoWithBooking mapItemToDtoWithBooking(Item item, Boolean getBookings) {
         LocalDateTime now = LocalDateTime.now();
