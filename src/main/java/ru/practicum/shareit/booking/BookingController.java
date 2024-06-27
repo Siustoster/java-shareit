@@ -1,11 +1,9 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.ShareitUtility;
 import ru.practicum.shareit.booking.dto.BookingInputDto;
-import ru.practicum.shareit.exception.BadParameterException;
 
 import javax.validation.Valid;
 import java.util.List;

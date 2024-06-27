@@ -174,4 +174,11 @@ public class ItemServiceTest {
         List<ItemDto> searchItemList = itemService.searchItem("", userId);
         assertThat(searchItemList.size(), equalTo(0));
     }
+
+    @Test
+    void createItemFailByBadRequestNumber() {
+        int userId = userService.createUser(user).getId();
+        assertThrows(BadParameterException.class, () -> itemService.createItem(new ItemDto(null, "item", "itemdescr",
+                true, -5), userId));
+    }
 }
