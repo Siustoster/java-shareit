@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingInputDto;
@@ -12,6 +13,7 @@ import ru.practicum.shareit.user.UserService;
 
 import java.time.LocalDateTime;
 import java.util.LinkedList;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Service
@@ -37,7 +39,7 @@ public class BookingService {
         if (bookingInput.getEnd().isBefore(bookingInput.getStart()))
             throw new BadDateException("Некорректная дата конца бронирования");
         if (bookingInput.getStart().isEqual(bookingInput.getEnd()))
-            throw new BadDateException("Некорректная период бронирования");
+            throw new BadDateException("Некорректный период бронирования");
         if (itemService.getFullItemById(bookingInput.getItemId()).getUser().getId() == userId)
             throw new WrongOwnerException("Владелец не может забронировать свою вещь");
 
@@ -46,20 +48,18 @@ public class BookingService {
     }
 
     @Transactional
-    public Booking approveBooking(int userId, int bookingId, String approved) {
-        if (!(approved.equalsIgnoreCase("true")) && !(approved.equalsIgnoreCase("false")))
-            throw new BadParameterException("Неправильный параметр approved");
+    public Booking approveBooking(int userId, int bookingId, Boolean approved) {
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException("Бронирование" +
                 " с айди " + bookingId
                 + " не найдено"));
         if (!booking.getStatus().name().equalsIgnoreCase("WAITING"))
             throw new BadParameterException("Заявка уже рассмотрена");
         User user = userService.getUser(userId);
-        if (booking.getItem().getUser().getId() != user.getId())
-            if (booking.getBooker().getId() != user.getId())
+        if (!Objects.equals(booking.getItem().getUser().getId(), user.getId()))
+            if (!Objects.equals(booking.getBooker().getId(), user.getId()))
                 throw new UserHasNoAccess("У вас нет доступа к бронированию");
             else throw new WrongOwnerException("Вы не владелец вещи");
-        if (approved.equalsIgnoreCase("true"))
+        if (approved)
             booking.setStatus(BookingStatus.APPROVED);
         else booking.setStatus(BookingStatus.REJECTED);
         return bookingRepository.save(booking);
@@ -72,7 +72,7 @@ public class BookingService {
                 " с айди " + bookingId
                 + " не найдено"));
 
-        if (booking.getBooker().getId() == user.getId() || booking.getItem().getUser().getId() == user.getId())
+        if (Objects.equals(booking.getBooker().getId(), user.getId()) || Objects.equals(booking.getItem().getUser().getId(), user.getId()))
             return booking;
         else
             throw new WrongOwnerException("Пользователь не является владельцем вещи " +
@@ -80,49 +80,45 @@ public class BookingService {
 
     }
 
-    public LinkedList<Booking> getBookingByUser(int userId, String stateIn) {
+    public LinkedList<Booking> getBookingByUser(int userId, String stateIn, PageRequest page) {
         User user = userService.getUser(userId);
         LinkedList<Booking> bookingLinkedList = new LinkedList<>();
         if (BookingState.findByName(stateIn) == null)
             throw new RuntimeException("Unknown state: " + stateIn);
         BookingState state = BookingState.findByName(stateIn);
         if (state.name().equalsIgnoreCase("ALL"))
-            bookingLinkedList = bookingRepository.getAllUserBookings(userId);
+            bookingLinkedList = bookingRepository.getAllUserBookings(userId, page);
         if (state.name().equalsIgnoreCase("FUTURE"))
-            bookingLinkedList = bookingRepository.getAllFutureUserBookings(userId, LocalDateTime.now());
+            bookingLinkedList = bookingRepository.getAllFutureUserBookings(userId, LocalDateTime.now(), page);
         if (state.name().equalsIgnoreCase("WAITING") || state.name().equalsIgnoreCase("REJECTED"))
-            bookingLinkedList = bookingRepository.getSpecialStateUserBookings(userId, BookingStatus.valueOf(stateIn));
+            bookingLinkedList = bookingRepository.getSpecialStateUserBookings(userId, BookingStatus.valueOf(stateIn), page);
         if (state.name().equalsIgnoreCase("PAST"))
-            bookingLinkedList = bookingRepository.getAllPastUserBookings(userId, LocalDateTime.now());
+            bookingLinkedList = bookingRepository.getAllPastUserBookings(userId, LocalDateTime.now(), page);
         if (state.name().equalsIgnoreCase("CURRENT"))
-            bookingLinkedList = bookingRepository.getAllCurrentUserBookings(userId, LocalDateTime.now());
+            bookingLinkedList = bookingRepository.getAllCurrentUserBookings(userId, LocalDateTime.now(), page);
 
         return bookingLinkedList;
     }
 
-    public LinkedList<Booking> getBookingByUserItems(int userId, String stateIn) {
+    public LinkedList<Booking> getBookingByUserItems(int userId, String stateIn, PageRequest page) {
         User user = userService.getUser(userId);
         LinkedList<Booking> bookingLinkedList = new LinkedList<>();
         if (BookingState.findByName(stateIn) == null)
             throw new RuntimeException("Unknown state: " + stateIn);
         BookingState state = BookingState.findByName(stateIn);
         if (state.name().equalsIgnoreCase("ALL"))
-            bookingLinkedList = bookingRepository.getAllUserItemBookings(userId);
+            bookingLinkedList = bookingRepository.getAllUserItemBookings(userId, page);
         if (state.name().equalsIgnoreCase("FUTURE"))
-            bookingLinkedList = bookingRepository.getFutureUserItemBookings(userId, LocalDateTime.now());
+            bookingLinkedList = bookingRepository.getFutureUserItemBookings(userId, LocalDateTime.now(), page);
         if (state.name().equalsIgnoreCase("WAITING") || state.name().equalsIgnoreCase("REJECTED"))
-            bookingLinkedList = bookingRepository.getSpecialStateUserItemBookings(userId, BookingStatus.valueOf(stateIn));
+            bookingLinkedList = bookingRepository.getSpecialStateUserItemBookings(userId, BookingStatus.valueOf(stateIn),
+                    page);
         if (state.name().equalsIgnoreCase("PAST"))
-            bookingLinkedList = bookingRepository.getPastUserItemBookings(userId, LocalDateTime.now());
+            bookingLinkedList = bookingRepository.getPastUserItemBookings(userId, LocalDateTime.now(), page);
         if (state.name().equalsIgnoreCase("CURRENT"))
-            bookingLinkedList = bookingRepository.getCurrentUserBookings(userId, LocalDateTime.now());
+            bookingLinkedList = bookingRepository.getCurrentUserBookings(userId, LocalDateTime.now(), page);
 
         return bookingLinkedList;
-    }
-
-    public Boolean checkUserUsedItem(int userId, int itemId) {
-        return !bookingRepository.findFirst1ByItemIdAndBookerIdAndEndIsBefore(itemId, userId,
-                LocalDateTime.now()).isEmpty();
     }
 
 }

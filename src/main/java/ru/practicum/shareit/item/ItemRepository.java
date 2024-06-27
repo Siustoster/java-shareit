@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @Repository
 public interface ItemRepository extends JpaRepository<Item, Integer> {
-    Optional<Item> findById(Integer integer);
+    Optional<Item> findById(Integer id);
 
     @Query("Select it from Item as it" +
             " join it.user as u" +
@@ -22,5 +22,8 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
             " where u.id=?1")
     List<Item> getAllUserItems(Integer userId);
 
-    List<Item> findAllByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndAvailableIsTrue(String text, String text2);
+    List<Item> findAllByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndAvailableIsTrue(String text,
+                                                                                                    String text2);
+
+    List<Item> findAllByRequestIdIn(List<Integer> requestId);
 }
