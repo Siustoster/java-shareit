@@ -3,6 +3,7 @@ package ru.practicum.shareit.booking;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.ShareitUtility;
 import ru.practicum.shareit.booking.dto.BookingInputDto;
 import ru.practicum.shareit.exception.BadParameterException;
 
@@ -25,8 +26,8 @@ public class BookingController {
     @PatchMapping({"/{bookingId}"})
     public Booking approveBooking(@RequestHeader(header) int userId,
                                   @PathVariable int bookingId,
-                                  @RequestParam(defaultValue = "false") String approved) {
-        return bookingService.approveBooking(userId, bookingId, Boolean.valueOf(approved));
+                                  @RequestParam(defaultValue = "false") Boolean approved) {
+        return bookingService.approveBooking(userId, bookingId, approved);
     }
 
     @GetMapping({"/{bookingId}"})
@@ -40,10 +41,7 @@ public class BookingController {
                                                      @RequestParam(defaultValue = "ALL") String state,
                                                      @RequestParam(defaultValue = "0") int from,
                                                      @RequestParam(defaultValue = "10") int size) {
-        if (from < 0 || size < 1)
-            throw new BadParameterException("Неверные параметры страницы");
-        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
-        return bookingService.getBookingByUser(userId, state, page);
+        return bookingService.getBookingByUser(userId, state, ShareitUtility.setPage(from, size));
     }
 
     @GetMapping("/owner")
@@ -51,9 +49,6 @@ public class BookingController {
                                                        @RequestParam(defaultValue = "ALL") String state,
                                                        @RequestParam(defaultValue = "0") int from,
                                                        @RequestParam(defaultValue = "10") int size) {
-        if (from < 0 || size < 1)
-            throw new BadParameterException("Неверные параметры страницы");
-        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
-        return bookingService.getBookingByUserItems(userId, state, page);
+        return bookingService.getBookingByUserItems(userId, state, ShareitUtility.setPage(from, size));
     }
 }

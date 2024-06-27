@@ -38,13 +38,16 @@ public class ItemService {
     @Transactional
     public ItemDto createItem(ItemDto itemDto, int userId) {
         User user = userService.getUser(userId);
+        Item item;
         ItemRequest request = null;
-        if (itemDto.getRequestId() != null && itemDto.getRequestId() > 0)
+        if (itemDto.getRequestId() == null) {
+            item = itemMapper.mapDtoToItem(itemDto, user, request);
+        } else if (itemDto.getRequestId() > 0) {
             request = requestRepository.findById(itemDto.getRequestId())
                     .orElseThrow(() -> new NotFoundException("Не найден запрос"));
-        Item item = itemMapper.mapDtoToItem(itemDto, user, request);
-
-
+            item = itemMapper.mapDtoToItem(itemDto, user, request);
+        } else
+            throw new BadParameterException("Некорректный айди запроса");
         return itemMapper.mapItemToDto(itemRepository.save(item));
     }
 

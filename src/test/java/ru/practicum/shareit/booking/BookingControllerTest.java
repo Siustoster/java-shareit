@@ -93,7 +93,7 @@ public class BookingControllerTest {
         Booking booking = new Booking(1, LocalDateTime.now(), LocalDateTime.now(), new Item(), new User(), BookingStatus.APPROVED);
         when(bookingService.approveBooking(eq(1), eq(1), anyBoolean()))
                 .thenReturn(booking);
-        Booking result = bookingController.approveBooking(1, 1, "true");
+        Booking result = bookingController.approveBooking(1, 1, true);
         assertEquals(result.getId(), booking.getId());
         assertEquals(result.getStatus(), booking.getStatus());
     }

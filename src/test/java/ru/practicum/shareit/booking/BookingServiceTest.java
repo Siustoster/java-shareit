@@ -78,7 +78,7 @@ public class BookingServiceTest {
         User userDto2 = new User(null, "Vladimir", "vladimir@mail.ru");
         User savedBooker = userService.createUser(userDto2);
         ItemDto itemDto = new ItemDto(null, "Отвёртка", "Отвёртка электрическая",
-                Boolean.valueOf("true"), 0);
+                Boolean.valueOf("true"), null);
         ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
         BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024,
                 6, 30, 9, 0),
@@ -97,7 +97,7 @@ public class BookingServiceTest {
         User savedBooker = userService.createUser(userDto2);
         int wrongUserId = userService.createUser(userDto3).getId();
         ItemDto itemDto = new ItemDto(null, "Отвёртка", "Отвёртка электрическая",
-                Boolean.valueOf("true"), 0);
+                Boolean.valueOf("true"), null);
         ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
         BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024,
                 6, 30, 9, 0),
