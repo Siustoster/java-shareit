@@ -2,7 +2,7 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.ShareitUtility;
+import ru.practicum.shareit.PageableUtility;
 import ru.practicum.shareit.booking.dto.BookingInputDto;
 
 import javax.validation.Valid;
@@ -39,7 +39,7 @@ public class BookingController {
                                                      @RequestParam(defaultValue = "ALL") String state,
                                                      @RequestParam(defaultValue = "0") int from,
                                                      @RequestParam(defaultValue = "10") int size) {
-        return bookingService.getBookingByUser(userId, state, ShareitUtility.setPage(from, size));
+        return bookingService.getBookingByUser(userId, state, PageableUtility.setPage(from, size));
     }
 
     @GetMapping("/owner")
@@ -47,6 +47,6 @@ public class BookingController {
                                                        @RequestParam(defaultValue = "ALL") String state,
                                                        @RequestParam(defaultValue = "0") int from,
                                                        @RequestParam(defaultValue = "10") int size) {
-        return bookingService.getBookingByUserItems(userId, state, ShareitUtility.setPage(from, size));
+        return bookingService.getBookingByUserItems(userId, state, PageableUtility.setPage(from, size));
     }
 }

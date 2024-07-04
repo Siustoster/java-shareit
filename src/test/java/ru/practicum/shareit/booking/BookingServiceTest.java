@@ -18,8 +18,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Transactional
@@ -43,8 +42,8 @@ public class BookingServiceTest {
                 Boolean.valueOf("true"), null);
         ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
         BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024,
-                6, 30, 9, 0),
-                LocalDateTime.of(2024, 6, 30, 10, 0));
+                7, 30, 9, 0),
+                LocalDateTime.of(2024, 7, 30, 10, 0));
         Booking bookingDtoForOut = bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
         assertThat(bookingDtoForOut.getId(), notNullValue());
     }
@@ -60,8 +59,8 @@ public class BookingServiceTest {
                 Boolean.valueOf("true"), null);
         ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
         BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024,
-                6, 30, 9, 0),
-                LocalDateTime.of(2024, 6, 30, 10, 0));
+                7, 30, 9, 0),
+                LocalDateTime.of(2024, 7, 30, 10, 0));
         Booking bookingDtoForOut = bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
         assertThat(BookingStatus.WAITING, equalTo(bookingDtoForOut.getStatus()));
         Booking bookingDtoForOutAPPROVED = bookingService.approveBooking(savedOwner.getId(),
@@ -81,8 +80,8 @@ public class BookingServiceTest {
                 Boolean.valueOf("true"), null);
         ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
         BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024,
-                6, 30, 9, 0),
-                LocalDateTime.of(2024, 6, 30, 10, 0));
+                7, 30, 9, 0),
+                LocalDateTime.of(2024, 7, 30, 10, 0));
         Booking bookingDtoForOut = bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
         Booking receivedBooking = bookingService.getBookingById(savedOwner.getId(), bookingDtoForOut.getId());
         assertThat(receivedBooking.getId(), equalTo(bookingDtoForOut.getId()));
@@ -100,8 +99,8 @@ public class BookingServiceTest {
                 Boolean.valueOf("true"), null);
         ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
         BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024,
-                6, 30, 9, 0),
-                LocalDateTime.of(2024, 6, 30, 10, 0));
+                7, 30, 9, 0),
+                LocalDateTime.of(2024, 7, 30, 10, 0));
         Booking bookingDtoForOut = bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
         assertThrows(WrongOwnerException.class, () -> bookingService.getBookingById(wrongUserId,
                 bookingDtoForOut.getId()));
@@ -118,8 +117,8 @@ public class BookingServiceTest {
         ItemDto itemDto = new ItemDto(null, "Отвёртка", "Отвёртка электрическая",
                 Boolean.valueOf("true"), null);
         ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
-        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024, 6,
-                30, 9, 0), LocalDateTime.of(2024, 6, 30, 10, 0));
+        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024, 7,
+                30, 9, 0), LocalDateTime.of(2024, 7, 30, 10, 0));
         Booking bookingDtoForOut = bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
         assertThat(BookingStatus.WAITING, equalTo(bookingDtoForOut.getStatus()));
         assertThrows(UserHasNoAccess.class, () -> bookingService.approveBooking(wrongUserId, bookingDtoForOut.getId(),
@@ -135,8 +134,8 @@ public class BookingServiceTest {
         ItemDto itemDto = new ItemDto(null, "Отвёртка", "Отвёртка электрическая",
                 Boolean.valueOf("true"), null);
         ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
-        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024, 6,
-                30, 9, 0), LocalDateTime.of(2024, 6, 30, 10, 0));
+        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024, 7,
+                30, 9, 0), LocalDateTime.of(2024, 7, 30, 10, 0));
         Booking bookingDtoForOut = bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
         List<Booking> bookingList = bookingService.getBookingByUser(savedBooker.getId(), "ALL",
                 PageRequest.of(0, 5));
@@ -152,8 +151,8 @@ public class BookingServiceTest {
         ItemDto itemDto = new ItemDto(null, "Отвёртка", "Отвёртка электрическая",
                 Boolean.valueOf("true"), null);
         ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
-        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024, 6,
-                30, 9, 0), LocalDateTime.of(2024, 6, 30, 10, 0));
+        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024, 7,
+                30, 9, 0), LocalDateTime.of(2024, 7, 30, 10, 0));
         Booking bookingDtoForOut = bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
         List<Booking> bookingList = bookingService.getBookingByUserItems(savedOwner.getId(), "ALL",
                 PageRequest.of(0, 5));
@@ -170,8 +169,8 @@ public class BookingServiceTest {
                 Boolean.valueOf("true"), null);
         ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
         BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024,
-                6, 15, 9, 0),
-                LocalDateTime.of(2024, 6, 30, 10, 0));
+                7, 1, 9, 0),
+                LocalDateTime.of(2024, 7, 30, 10, 0));
         // bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
         assertThrows(BadDateException.class, () -> bookingService.createBooking(savedBooker.getId(), bookingDtoForIn));
     }
@@ -186,8 +185,8 @@ public class BookingServiceTest {
                 Boolean.valueOf("true"), null);
         ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
         BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024,
-                6, 30, 9, 0),
-                LocalDateTime.of(2024, 6, 15, 10, 0));
+                7, 30, 9, 0),
+                LocalDateTime.of(2024, 7, 15, 10, 0));
         // bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
         assertThrows(BadDateException.class, () -> bookingService.createBooking(savedBooker.getId(), bookingDtoForIn));
     }
@@ -202,8 +201,8 @@ public class BookingServiceTest {
                 false, null);
         ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
         BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024,
-                6, 30, 9, 0),
-                LocalDateTime.of(2024, 6, 30, 10, 0));
+                7, 30, 9, 0),
+                LocalDateTime.of(2024, 7, 30, 10, 0));
         assertThrows(ItemIsUnavailableExeption.class, () -> bookingService.createBooking(savedBooker.getId(), bookingDtoForIn));
     }
 
@@ -232,7 +231,7 @@ public class BookingServiceTest {
                 Boolean.valueOf("true"), null);
         ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
         BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024,
-                6, 30, 9, 0),
+                7, 30, 9, 0),
                 null);
         // bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
         assertThrows(BadDateException.class, () -> bookingService.createBooking(savedBooker.getId(), bookingDtoForIn));
@@ -248,9 +247,9 @@ public class BookingServiceTest {
                 Boolean.valueOf("true"), null);
         ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
         BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024,
-                6, 30, 9, 0),
+                7, 30, 9, 0),
                 LocalDateTime.of(2024,
-                        6, 29, 9, 0));
+                        7, 29, 9, 0));
         // bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
         assertThrows(BadDateException.class, () -> bookingService.createBooking(savedBooker.getId(), bookingDtoForIn));
     }
@@ -265,9 +264,9 @@ public class BookingServiceTest {
                 Boolean.valueOf("true"), null);
         ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
         BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024,
-                6, 30, 9, 0),
+                7, 30, 9, 0),
                 LocalDateTime.of(2024,
-                        6, 30, 9, 0));
+                        7, 30, 9, 0));
 
         assertThrows(BadDateException.class, () -> bookingService.createBooking(savedBooker.getId(), bookingDtoForIn));
     }
@@ -282,8 +281,8 @@ public class BookingServiceTest {
                 Boolean.valueOf("true"), null);
         ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
         BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024,
-                6, 30, 9, 0),
-                LocalDateTime.of(2024, 6, 30, 10, 0));
+                7, 30, 9, 0),
+                LocalDateTime.of(2024, 7, 30, 10, 0));
         assertThrows(WrongOwnerException.class, () -> bookingService.createBooking(savedOwner.getId(), bookingDtoForIn));
     }
 
@@ -297,8 +296,8 @@ public class BookingServiceTest {
                 Boolean.valueOf("true"), null);
         ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
         BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024,
-                6, 30, 9, 0),
-                LocalDateTime.of(2024, 6, 30, 10, 0));
+                7, 30, 9, 0),
+                LocalDateTime.of(2024, 7, 30, 10, 0));
         Booking bookingDtoForOut = bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
         assertThat(BookingStatus.WAITING, equalTo(bookingDtoForOut.getStatus()));
         Booking bookingDtoForOutAPPROVED = bookingService.approveBooking(savedOwner.getId(),
@@ -318,8 +317,8 @@ public class BookingServiceTest {
                 Boolean.valueOf("true"), null);
         ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
         BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024,
-                6, 30, 9, 0),
-                LocalDateTime.of(2024, 6, 30, 10, 0));
+                7, 30, 9, 0),
+                LocalDateTime.of(2024, 7, 30, 10, 0));
         Booking bookingDtoForOut = bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
         assertThat(BookingStatus.WAITING, equalTo(bookingDtoForOut.getStatus()));
         Booking bookingDtoForOutAPPROVED = bookingService.approveBooking(savedOwner.getId(),
@@ -339,8 +338,8 @@ public class BookingServiceTest {
                 Boolean.valueOf("true"), null);
         ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
         BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024,
-                6, 30, 9, 0),
-                LocalDateTime.of(2024, 6, 30, 10, 0));
+                7, 30, 9, 0),
+                LocalDateTime.of(2024, 7, 30, 10, 0));
         Booking bookingDtoForOut = bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
         assertThat(BookingStatus.WAITING, equalTo(bookingDtoForOut.getStatus()));
         assertThrows(WrongOwnerException.class, () -> bookingService.approveBooking(savedBooker.getId(),
@@ -356,8 +355,8 @@ public class BookingServiceTest {
         ItemDto itemDto = new ItemDto(null, "Отвёртка", "Отвёртка электрическая",
                 Boolean.valueOf("true"), null);
         ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
-        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024, 6,
-                30, 9, 0), LocalDateTime.of(2024, 6, 30, 10, 0));
+        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024, 7,
+                30, 9, 0), LocalDateTime.of(2024, 7, 30, 10, 0));
         Booking bookingDtoForOut = bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
         assertThrows(RuntimeException.class, () -> bookingService.getBookingByUser(savedBooker.getId(), "ALL123123",
                 PageRequest.of(0, 5)));
@@ -372,8 +371,8 @@ public class BookingServiceTest {
         ItemDto itemDto = new ItemDto(null, "Отвёртка", "Отвёртка электрическая",
                 Boolean.valueOf("true"), null);
         ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
-        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024, 6,
-                30, 9, 0), LocalDateTime.of(2024, 6, 30, 10, 0));
+        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024, 7,
+                30, 9, 0), LocalDateTime.of(2024, 7, 30, 10, 0));
         Booking bookingDtoForOut = bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
         List<Booking> bookingList = bookingService.getBookingByUser(savedBooker.getId(), "FUTURE",
                 PageRequest.of(0, 5));
@@ -389,8 +388,8 @@ public class BookingServiceTest {
         ItemDto itemDto = new ItemDto(null, "Отвёртка", "Отвёртка электрическая",
                 Boolean.valueOf("true"), null);
         ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
-        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024, 6,
-                30, 9, 0), LocalDateTime.of(2024, 6, 30, 10, 0));
+        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024, 7,
+                30, 9, 0), LocalDateTime.of(2024, 7, 30, 10, 0));
         Booking bookingDtoForOut = bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
         List<Booking> bookingList = bookingService.getBookingByUser(savedBooker.getId(), "WAITING",
                 PageRequest.of(0, 5));
@@ -413,8 +412,8 @@ public class BookingServiceTest {
         ItemDto itemDto = new ItemDto(null, "Отвёртка", "Отвёртка электрическая",
                 Boolean.valueOf("true"), null);
         ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
-        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024, 6,
-                30, 9, 0), LocalDateTime.of(2024, 6, 30, 10, 0));
+        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024, 7,
+                30, 9, 0), LocalDateTime.of(2024, 7, 30, 10, 0));
         Booking bookingDtoForOut = bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
         List<Booking> bookingList = bookingService.getBookingByUser(savedBooker.getId(), "PAST",
                 PageRequest.of(0, 5));
@@ -430,8 +429,8 @@ public class BookingServiceTest {
         ItemDto itemDto = new ItemDto(null, "Отвёртка", "Отвёртка электрическая",
                 Boolean.valueOf("true"), null);
         ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
-        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024, 6,
-                30, 9, 0), LocalDateTime.of(2024, 6, 30, 10, 0));
+        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024, 7,
+                30, 9, 0), LocalDateTime.of(2024, 7, 30, 10, 0));
         Booking bookingDtoForOut = bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
         List<Booking> bookingList = bookingService.getBookingByUser(savedBooker.getId(), "CURRENT",
                 PageRequest.of(0, 5));
@@ -447,8 +446,8 @@ public class BookingServiceTest {
         ItemDto itemDto = new ItemDto(null, "Отвёртка", "Отвёртка электрическая",
                 Boolean.valueOf("true"), null);
         ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
-        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024, 6,
-                30, 9, 0), LocalDateTime.of(2024, 6, 30, 10, 0));
+        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024, 7,
+                30, 9, 0), LocalDateTime.of(2024, 7, 30, 10, 0));
         Booking bookingDtoForOut = bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
         assertThrows(RuntimeException.class, () -> bookingService.getBookingByUserItems(savedOwner.getId(), "ALL123123",
                 PageRequest.of(0, 5)));
@@ -463,12 +462,13 @@ public class BookingServiceTest {
         ItemDto itemDto = new ItemDto(null, "Отвёртка", "Отвёртка электрическая",
                 Boolean.valueOf("true"), null);
         ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
-        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024, 6,
-                30, 9, 0), LocalDateTime.of(2024, 6, 30, 10, 0));
+        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024, 7,
+                30, 9, 0), LocalDateTime.of(2024, 7, 30, 10, 0));
         Booking bookingDtoForOut = bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
         List<Booking> bookingList = bookingService.getBookingByUserItems(savedOwner.getId(), "CURRENT",
                 PageRequest.of(0, 5));
         assertThat(bookingList.size(), equalTo(0));
+        //assertThat(,is())
     }
 
     @Test
@@ -480,8 +480,8 @@ public class BookingServiceTest {
         ItemDto itemDto = new ItemDto(null, "Отвёртка", "Отвёртка электрическая",
                 Boolean.valueOf("true"), null);
         ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
-        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024, 6,
-                30, 9, 0), LocalDateTime.of(2024, 6, 30, 10, 0));
+        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024, 7,
+                30, 9, 0), LocalDateTime.of(2024, 7, 30, 10, 0));
         Booking bookingDtoForOut = bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
         List<Booking> bookingList = bookingService.getBookingByUserItems(savedOwner.getId(), "PAST",
                 PageRequest.of(0, 5));
@@ -497,8 +497,8 @@ public class BookingServiceTest {
         ItemDto itemDto = new ItemDto(null, "Отвёртка", "Отвёртка электрическая",
                 Boolean.valueOf("true"), null);
         ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
-        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024, 6,
-                30, 9, 0), LocalDateTime.of(2024, 6, 30, 10, 0));
+        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024, 7,
+                30, 9, 0), LocalDateTime.of(2024, 7, 30, 10, 0));
         Booking bookingDtoForOut = bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
         List<Booking> bookingList = bookingService.getBookingByUserItems(savedOwner.getId(), "WAITING",
                 PageRequest.of(0, 5));
@@ -521,8 +521,8 @@ public class BookingServiceTest {
         ItemDto itemDto = new ItemDto(null, "Отвёртка", "Отвёртка электрическая",
                 Boolean.valueOf("true"), null);
         ItemDto savedItem = itemService.createItem(itemDto, savedOwner.getId());
-        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024, 6,
-                30, 9, 0), LocalDateTime.of(2024, 6, 30, 10, 0));
+        BookingInputDto bookingDtoForIn = new BookingInputDto(savedItem.getId(), LocalDateTime.of(2024, 7,
+                30, 9, 0), LocalDateTime.of(2024, 7, 30, 10, 0));
         Booking bookingDtoForOut = bookingService.createBooking(savedBooker.getId(), bookingDtoForIn);
         List<Booking> bookingList = bookingService.getBookingByUserItems(savedOwner.getId(), "FUTURE",
                 PageRequest.of(0, 5));

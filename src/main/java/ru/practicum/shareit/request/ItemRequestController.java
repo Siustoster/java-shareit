@@ -2,7 +2,7 @@ package ru.practicum.shareit.request;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.ShareitUtility;
+import ru.practicum.shareit.PageableUtility;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestDtoOutWithItems;
 
@@ -31,7 +31,7 @@ public class ItemRequestController {
     public List<ItemRequestDtoOutWithItems> getAllRequests(@RequestHeader(header) int userId,
                                                            @RequestParam(defaultValue = "0") int from,
                                                            @RequestParam(defaultValue = "10") int size) {
-        return requestService.getAllRequests(userId, ShareitUtility.setPageSorted(from, size));
+        return requestService.getAllRequests(userId, PageableUtility.setPageSorted(from, size));
     }
 
     @GetMapping("/{requestId}")
