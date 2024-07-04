@@ -6,7 +6,7 @@ import ru.practicum.shareit.exception.NotFoundException;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -14,7 +14,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
-    public Collection<User> getAllUsers() {
+    public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 

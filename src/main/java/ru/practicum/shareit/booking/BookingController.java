@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.PageableUtility;
 import ru.practicum.shareit.booking.dto.BookingInputDto;
 
 import javax.validation.Valid;
@@ -23,7 +24,7 @@ public class BookingController {
     @PatchMapping({"/{bookingId}"})
     public Booking approveBooking(@RequestHeader(header) int userId,
                                   @PathVariable int bookingId,
-                                  @RequestParam(defaultValue = "false") String approved) {
+                                  @RequestParam(defaultValue = "false") Boolean approved) {
         return bookingService.approveBooking(userId, bookingId, approved);
     }
 
@@ -35,13 +36,17 @@ public class BookingController {
 
     @GetMapping
     public List<Booking> getAllBookingsOfCurrentUser(@RequestHeader(header) int userId,
-                                                     @RequestParam(defaultValue = "ALL") String state) {
-        return bookingService.getBookingByUser(userId, state);
+                                                     @RequestParam(defaultValue = "ALL") String state,
+                                                     @RequestParam(defaultValue = "0") int from,
+                                                     @RequestParam(defaultValue = "10") int size) {
+        return bookingService.getBookingByUser(userId, state, PageableUtility.setPage(from, size));
     }
 
     @GetMapping("/owner")
     public List<Booking> getAllBookingsForAllUserItems(@RequestHeader(header) int userId,
-                                                       @RequestParam(defaultValue = "ALL") String state) {
-        return bookingService.getBookingByUserItems(userId, state);
+                                                       @RequestParam(defaultValue = "ALL") String state,
+                                                       @RequestParam(defaultValue = "0") int from,
+                                                       @RequestParam(defaultValue = "10") int size) {
+        return bookingService.getBookingByUserItems(userId, state, PageableUtility.setPage(from, size));
     }
 }

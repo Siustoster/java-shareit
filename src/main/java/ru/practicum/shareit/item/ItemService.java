@@ -14,12 +14,15 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoWithBooking;
 import ru.practicum.shareit.item.dto.ItemDtoWithBookingAndComment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserService;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,11 +33,21 @@ public class ItemService {
     private final ItemMapper itemMapper;
     private final CommentRepository commentRepository;
     private final BookingRepository bookingService;
+    private final ItemRequestRepository requestRepository;
 
     @Transactional
     public ItemDto createItem(ItemDto itemDto, int userId) {
         User user = userService.getUser(userId);
-        Item item = itemMapper.mapDtoToItem(itemDto, user);
+        Item item;
+        ItemRequest request = null;
+        if (itemDto.getRequestId() == null) {
+            item = itemMapper.mapDtoToItem(itemDto, user, request);
+        } else if (itemDto.getRequestId() > 0) {
+            request = requestRepository.findById(itemDto.getRequestId())
+                    .orElseThrow(() -> new NotFoundException("Не найден запрос"));
+            item = itemMapper.mapDtoToItem(itemDto, user, request);
+        } else
+            throw new BadParameterException("Некорректный айди запроса");
         return itemMapper.mapItemToDto(itemRepository.save(item));
     }
 
@@ -61,7 +74,7 @@ public class ItemService {
         List<CommentDto> comments = commentRepository.findAllByItemId(itemId).stream()
                 .map(itemMapper::mapCommentToDto)
                 .collect(Collectors.toList());
-        if (item.getUser().getId() == user.getId())
+        if (Objects.equals(item.getUser().getId(), user.getId()))
             return itemMapper.mapItemToDtoWithBookingAndComment(item, true, comments);
         else return itemMapper.mapItemToDtoWithBookingAndComment(item, false, comments);
         // return itemMapper.mapItemToDto(itemRepository.findByIdAndUserId(itemId,userId));
@@ -99,5 +112,12 @@ public class ItemService {
         if (bookings.isEmpty())
             throw new UserHasNoAccess("Нельзя оставить отзыв без использования");
         return itemMapper.mapCommentToDto(commentRepository.save(itemMapper.mapDtoToComment(comment, user, item)));
+    }
+
+    @Transactional
+    public List<ItemDto> getAllItemsByRequestsList(List<Integer> requestId) {
+        return itemRepository.findAllByRequestIdIn(requestId).stream()
+                .map(itemMapper::mapItemToDto)
+                .collect(Collectors.toList());
     }
 }
