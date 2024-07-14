@@ -10,6 +10,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import java.util.HashMap;
 import java.util.Map;
+
 @RestControllerAdvice("ru.practicum.shareit")
 public class ErrorHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
