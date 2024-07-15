@@ -7,7 +7,6 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoWithBooking;
 import ru.practicum.shareit.item.dto.ItemDtoWithBookingAndComment;
 
-import javax.validation.Valid;
 import java.util.Collection;
 
 @RestController
@@ -18,7 +17,7 @@ public class ItemController {
     private static final String header = "X-Sharer-User-Id";
 
     @PostMapping
-    public ItemDto createItem(@RequestHeader(header) int userId, @RequestBody @Valid ItemDto item) {
+    public ItemDto createItem(@RequestHeader(header) int userId, @RequestBody ItemDto item) {
         return itemService.createItem(item, userId);
     }
 

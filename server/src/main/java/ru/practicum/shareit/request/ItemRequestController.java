@@ -6,7 +6,6 @@ import ru.practicum.shareit.PageableUtility;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestDtoOutWithItems;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -17,7 +16,7 @@ public class ItemRequestController {
     private static final String header = "X-Sharer-User-Id";
 
     @PostMapping
-    public ItemRequest createNewRequest(@RequestBody @Valid ItemRequestDto request,
+    public ItemRequest createNewRequest(@RequestBody ItemRequestDto request,
                                         @RequestHeader(header) int userId) {
         return requestService.createNewRequest(request, userId);
     }
